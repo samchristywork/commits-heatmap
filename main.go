@@ -13,6 +13,12 @@ type Date struct {
 	Day   int
 }
 
+type Color struct {
+	R int
+	G int
+	B int
+}
+
 func contributionsOnDay(dates []Date, date Date) int {
 	count := 0
 	for _, d := range dates {
@@ -86,8 +92,38 @@ func main() {
 		dates = append(dates, date)
 	}
 
-	for _, date := range dates {
-		fmt.Println(date)
+	yearOffset := 0.0
+	month := -1
+	months := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+
+	pdf := fpdf.New("P", "in", "A4", "")
+	pdf.AddPage()
+
+	pdf.SetFont("Arial", "", 8)
+	pdf.SetTextColor(127, 127, 127)
+
+	cellSize := 0.15
+	xOffset := 0.2
+	yOffset := 0.2
+
+	for year := 2022; year <= 2024; year++ {
+		pdf.TransformBegin()
+		pdf.TransformTranslate(xOffset-0.05, yOffset+yearOffset*1.4-1.4)
+		pdf.TransformRotate(90, 1, 1)
+		pdf.Text(0, 0, fmt.Sprintf("%d", year))
+		pdf.TransformEnd()
+
+		start := time.Date(year, 1, 1, 12, 0, 0, 0, time.UTC)
+		row := int(start.Weekday())
+		column := 0
+
+		for date := start; year == date.Year(); date = date.AddDate(0, 0, 1) {
+			if yearOffset == 0 && month != int(date.Month()) {
+				month = int(date.Month())
+				pdf.Text(xOffset+float64(column)*cellSize, yOffset-0.05, months[month-1])
+			}
+		}
+		yearOffset += 0.85
 	}
 
 	startDate := time.Date(2022, 1, 1, 12, 0, 0, 0, time.UTC)
