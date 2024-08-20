@@ -122,6 +122,30 @@ func main() {
 				month = int(date.Month())
 				pdf.Text(xOffset+float64(column)*cellSize, yOffset-0.05, months[month-1])
 			}
+
+			d := Date{date.Year(), int(date.Month()), date.Day()}
+			count := contributionsOnDay(dates, d)
+
+			c := float64(count) / 15
+
+			if c > 1 {
+				c = 1
+			}
+
+			greenColor := Color{0, 255, 0}
+			defaultColor := Color{230, 230, 230}
+			actual := mix(defaultColor, greenColor, c)
+			pdf.SetFillColor(actual.R, actual.G, actual.B)
+			pdf.Rect(
+				xOffset+float64(column)*cellSize,
+				yOffset+(float64(row)+yearOffset*9)*cellSize,
+				cellSize*0.9, cellSize*0.9, "F")
+
+			row++
+			if row == 7 {
+				row = 0
+				column++
+			}
 		}
 		yearOffset += 0.85
 	}
