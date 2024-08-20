@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-pdf/fpdf"
 	"os"
 	"time"
 )
@@ -20,6 +21,49 @@ func contributionsOnDay(dates []Date, date Date) int {
 		}
 	}
 	return count
+}
+
+func getEarliestDate(dates []Date) Date {
+	earliest := dates[0]
+	for _, date := range dates {
+		if date.Year < earliest.Year {
+			earliest = date
+		} else if date.Year == earliest.Year {
+			if date.Month < earliest.Month {
+				earliest = date
+			} else if date.Month == earliest.Month {
+				if date.Day < earliest.Day {
+					earliest = date
+				}
+			}
+		}
+	}
+	return earliest
+}
+
+func getLatestDate(dates []Date) Date {
+	latest := dates[0]
+	for _, date := range dates {
+		if date.Year > latest.Year {
+			latest = date
+		} else if date.Year == latest.Year {
+			if date.Month > latest.Month {
+				latest = date
+			} else if date.Month == latest.Month {
+				if date.Day > latest.Day {
+					latest = date
+				}
+			}
+		}
+	}
+	return latest
+}
+
+func mix(a Color, b Color, amount float64) Color {
+	r := int(float64(a.R)*(1-amount) + float64(b.R)*amount)
+	g := int(float64(a.G)*(1-amount) + float64(b.G)*amount)
+	bb := int(float64(a.B)*(1-amount) + float64(b.B)*amount)
+	return Color{r, g, bb}
 }
 
 func main() {
